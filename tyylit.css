@@ -1,0 +1,9 @@
+body {
+   background-color: white;
+   color: black;
+}
+
+label {
+   display: block;
+   clear: both;
+}
