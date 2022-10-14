@@ -80,11 +80,14 @@ function start(data) {
       radioinput.setAttribute("checked", "checked");
       eiAsetettu = false;
     }
-    document.querySelector('span[id="sarjaradiopaikka"]').appendChild(labeli).appendChild(radioinput);
-
+    document.querySelector('span[id="sarjaradiopaikka"]')
+      .appendChild(labeli).appendChild(radioinput);
   }
 
-  console.log(aakkossarjat);
+  // Joukkueen nimen hallinnointi
+
+  // Jäsenien tietojen hallinnointi
+
 }
 
 window.addEventListener("load", alustus);
