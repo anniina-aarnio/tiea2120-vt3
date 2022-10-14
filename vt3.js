@@ -1,12 +1,12 @@
 "use strict";  // pidä tämä ensimmäisenä rivinä
 //@ts-check
 
-// Alustetaan data, joka on jokaisella sivun latauskerralla erilainen.
+/* // Alustetaan data, joka on jokaisella sivun latauskerralla erilainen.
 // tallennetaan data selaimen localStorageen, josta sitä käytetään seuraavilla
 // sivun latauskerroilla. Datan voi resetoida lisäämällä sivun osoitteeseen
 // ?reset=1
 // jolloin uusi data ladataan palvelimelta
-// Tätä saa tarvittaessa lisäviritellä
+// Tätä saa tarvittaessa lisäviritellä */
 function alustus() {
      // luetaan sivun osoitteesta mahdollinen reset-parametri
      // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
@@ -50,14 +50,41 @@ function alustus() {
 function start(data) {
   // tänne oma koodi
   console.log(data);
-  // tallenna data sen mahdollisten muutosten jälkeen aina localStorageen. 
-  // localStorage.setItem("TIEA2120-vt3-2022s", JSON.stringify(data));
-  // kts ylempää mallia
-  // varmista, että sovellus toimii oikein omien tallennusten jälkeenkin
-  // eli näyttää sivun uudelleen lataamisen jälkeen edelliset lisäykset ja muutokset
-  // resetoi rakenne tarvittaessa lisäämällä sivun osoitteen perään ?reset=1
-  // esim. http://users.jyu.fi/~omatunnus/TIEA2120/vt2/pohja.xhtml?reset=1
+/* tallenna data sen mahdollisten muutosten jälkeen aina localStorageen. 
+   localStorage.setItem("TIEA2120-vt3-2022s", JSON.stringify(data));
+   kts ylempää mallia
+   varmista, että sovellus toimii oikein omien tallennusten jälkeenkin
+   eli näyttää sivun uudelleen lataamisen jälkeen edelliset lisäykset ja muutokset
+   resetoi rakenne tarvittaessa lisäämällä sivun osoitteen perään ?reset=1
+   esim. http://users.jyu.fi/~omatunnus/TIEA2120/vt2/pohja.xhtml?reset=1 */
 
+  // Sarjojen tiedot joukkuekyselyyn
+  let aakkossarjat = Array.from(data.sarjat).sort((a, b) => {
+    if (a.nimi.trim() < b.nimi.trim()) {
+      return -1;
+    } else if (b.nimi.trim() < a.nimi.trim()) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+  let eiAsetettu = true;
+  for (let sarja of aakkossarjat) {
+    let labeli = document.createElement("label");
+    labeli.textContent = sarja.nimi;
+    let radioinput = document.createElement("input");
+    radioinput.setAttribute("type", "radio");
+    radioinput.setAttribute("name", "sarjaradio");
+
+    if (eiAsetettu) {
+      radioinput.setAttribute("checked", "checked");
+      eiAsetettu = false;
+    }
+    document.querySelector('span[id="sarjaradiopaikka"]').appendChild(labeli).appendChild(radioinput);
+
+  }
+
+  console.log(aakkossarjat);
 }
 
 window.addEventListener("load", alustus);

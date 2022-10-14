@@ -13,30 +13,37 @@
   -->
         <h1>Tulospalvelu</h1>
 
-        <form id="lomake">
-            <fieldset id="joukkueen_tiedot">
+        <form id="joukkuelomake">
+            <fieldset id="joukkuekysely">
                 <legend>Joukkueen tiedot</legend>
                 <label>
                     Nimi
                     <input
+                        id="joukkueen_nimi"
                         type="text"
                         minlength="2"
                         required="required" />
                 </label>
                 <p>
                     Sarja
-                    <span>
-                        <label>
-                            testiesimerkki
-                            <input type="radio" />                                
-                        </label>
-                        <label>
-                            testiesimerkki
-                            <input type="radio" />                                
-                        </label>
+                    <span id="sarjaradiopaikka">
                     </span>
                 </p>
             </fieldset>
+            <fieldset id="jasenkysely">
+                <legend>Jäsenet</legend>
+                <label>
+                    Jäsen 1
+                    <input
+                        type="text"
+                        pattern="\S+" />
+                </label>
+                <label>
+                    Jäsen 2
+                    <input type="text" />
+                </label>
+            </fieldset>
+            <input type="submit" id="tallenna" value="Tallenna" />
         </form>
 
 <!-- Tästä eteenpäin sivun sisältöä ei saa muuttaa -->

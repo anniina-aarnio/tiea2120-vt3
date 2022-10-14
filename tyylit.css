@@ -3,7 +3,38 @@ body {
    color: black;
 }
 
+/* Fieldsetin ulkoasu */
+fieldset {
+   max-width: 25em;
+   clear: both;
+}
+
+/* Formin sisällä label + input ulkoasu */
 label {
    display: block;
+   max-width: 25em;
+   margin: .5em;
+}
+
+label input {
+   float: right;
+}
+
+input[type="text"] {
+   width: 60%;
+}
+
+/* Sarjakyselyn vaihtoehdot */
+p {
    clear: both;
+   max-width: 25em;
+   margin: .5em;
+}
+
+p span {
+   float: right;
+}
+
+p span label {
+   margin: 0;
 }
