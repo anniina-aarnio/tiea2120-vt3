@@ -226,7 +226,7 @@ function start(data) {
       }
     }
     if (jasenlista.size > 0) {
-      return jasenlista;
+      return Array.from(jasenlista);
     } else {
       for (let jasen of jaseninputit) {
         jasen.setCustomValidity("Joukkueella on oltava vähintään yksi jäsen");
