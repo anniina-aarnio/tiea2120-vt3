@@ -58,6 +58,25 @@ function start(data) {
    resetoi rakenne tarvittaessa lisäämällä sivun osoitteen perään ?reset=1
    esim. http://users.jyu.fi/~omatunnus/TIEA2120/vt2/pohja.xhtml?reset=1 */
 
+  // ------ DATAN PYÖRITTELY ------
+  // Joukkueen nimet mappiin aakkosjärjestykseen
+  let joukkueennimet = new Map();
+  for (let joukkue of Array.from(data.joukkueet).sort((a,b) => {
+    if (a.nimi < b.nimi) {
+      return -1;
+    } else if (b.nimi < a.nimi) {
+      return 1;
+    } else {
+      return 0;
+    }
+  })) {
+    joukkueennimet[joukkue.nimi] = joukkue;
+  }
+  
+
+  // ------ FORMIN PYÖRITTELY ------
+  // Joukkueen nimen tarkistuksia yms
+
   // Sarjojen tiedot joukkuekyselyyn
   let aakkossarjat = Array.from(data.sarjat).sort((a, b) => {
     if (a.nimi.trim() < b.nimi.trim()) {
@@ -80,9 +99,26 @@ function start(data) {
   // asetetaan ensimmäiseen radionappiin checked
   document.querySelector('input[type="radio"]').setAttribute("checked", "checked");
 
-  // Joukkueen nimen hallinnointi
-
   // Jäsenien tietojen hallinnointi
+  let jaseninputit = document.querySelectorAll('input[name^="jasen"]');
+  for (let inputti of jaseninputit) {
+    inputti.addEventListener("input", muutoksetJaseneen);
+  }
+
+  /**
+   * Luo jäseninputteihin tarkistuksia,
+   * kun on tehty jonkinlainen muutos 
+   * @param {Event} e 
+   */
+  function muutoksetJaseneen(e) {
+    let inputti = e.target;
+    if (inputti.validity.patternMismatch) {
+      inputti.setCustomValidity("Anna nimi kirjaimin");
+    } else {
+      inputti.setCustomValidity("");
+    }
+  }
+
 
 }
 
