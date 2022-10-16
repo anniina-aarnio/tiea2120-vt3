@@ -61,15 +61,7 @@ function start(data) {
   // ------ DATAN PYÖRITTELY ------
   // Joukkueen nimet mappiin aakkosjärjestykseen
   let joukkueennimetIsolla = new Set();
-  for (let joukkue of Array.from(data.joukkueet).sort((a,b) => {
-    if (a.nimi < b.nimi) {
-      return -1;
-    } else if (b.nimi < a.nimi) {
-      return 1;
-    } else {
-      return 0;
-    }
-  })) {
+  for (let joukkue of Array.from(data.joukkueet).sort(nimiJarjestys)) {
     joukkueennimetIsolla.add(joukkue.nimi.trim().toUpperCase());
   }
   
@@ -207,6 +199,8 @@ function start(data) {
     // formin tyhjennys alkuperäiseen muotoon
     document.forms.joukkuelomake.reset();
     console.log(data.joukkueet);
+
+    // joukkuelistan päivittäminen
   });
 
   /**
@@ -237,7 +231,48 @@ function start(data) {
     }
   }
 
+  function luoJoukkuelista() {
+    let emolista = document.getElementById("joukkuelista");
+    for (let joukkue of Array.from(data.joukkueet).sort(nimiJarjestys)) {
+      // joukkueen nimi ja sarja boldattuna
+      let li = document.createElement("li");
+      li.textContent = joukkue.nimi + " ";
+      
+      let sarja = document.createElement("strong");
+      for (let s of data.sarjat) {
+        if (s.id == joukkue.sarja) {
+          sarja.textContent = s.nimi;
+          break;
+        }
+      }
+      li.appendChild(sarja);
 
+      let alaul = document.createElement("ul");
+      for (let jasen of Array.from(joukkue.jasenet).sort(nimiJarjestys)) {
+        let alali = document.createElement("li");
+        alali.textContent = jasen;
+        alaul.appendChild(alali);
+      }
+
+    }
+  }
+}
+
+/**
+ * Järjestysfunktio objektille, jolla on nimi
+ * objekti.nimi :ssä
+ * @param {Object} a 
+ * @param {Object} b 
+ * @return {Number} -1 jos a ennen b, 1 jos b ennen a, 0 jos samat
+ */
+function nimiJarjestys(a,b) {
+  if (a.nimi < b.nimi) {
+    return -1;
+  }
+  if (b.nimi < a.nimi) {
+    return 1;
+  }
+  return 0;
 }
 
 window.addEventListener("load", alustus);
