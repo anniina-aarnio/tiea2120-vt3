@@ -13,7 +13,7 @@
   -->
         <h1>Tulospalvelu</h1>
 
-        <form id="joukkuelomake">
+        <form id="joukkuelomake" action="#">
             <fieldset id="joukkuekysely">
                 <legend>Joukkueen tiedot</legend>
                 <label>
@@ -38,14 +38,14 @@
                     <input
                         name="jasen1"
                         type="text"
-                        pattern="\S+" />
+                        pattern=".*\S+.*\S+.*" />
                 </label>
                 <label>
                     Jäsen 2
                     <input
                         name="jasen2"
                         type="text"
-                        pattern="\S+" />
+                        pattern=".*\S+.*\S+.*" />
                 </label>
             </fieldset>
             <input type="submit" id="tallenna" value="Tallenna" />

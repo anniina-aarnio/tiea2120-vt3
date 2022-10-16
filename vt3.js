@@ -60,7 +60,7 @@ function start(data) {
 
   // ------ DATAN PYÖRITTELY ------
   // Joukkueen nimet mappiin aakkosjärjestykseen
-  let joukkueennimet = new Map();
+  let joukkueennimetIsolla = new Set();
   for (let joukkue of Array.from(data.joukkueet).sort((a,b) => {
     if (a.nimi < b.nimi) {
       return -1;
@@ -70,12 +70,21 @@ function start(data) {
       return 0;
     }
   })) {
-    joukkueennimet[joukkue.nimi] = joukkue;
+    joukkueennimetIsolla.add(joukkue.nimi.trim().toUpperCase());
   }
   
 
   // ------ FORMIN PYÖRITTELY ------
-  // Joukkueen nimen tarkistuksia yms
+  // Joukkueen nimen käsittely
+  let jnimiInput = document.querySelector('input[id="joukkueen_nimi"]');
+  jnimiInput.addEventListener("input", function(e) {
+    let jnimi = e.target.value.trim().toUpperCase();
+    if (joukkueennimetIsolla.has(jnimi)) {
+      jnimiInput.setCustomValidity("Nimi on jo käytössä, valitse toinen nimi");
+    } else {
+      jnimiInput.setCustomValidity("");
+    }
+  });
 
   // Sarjojen tiedot joukkuekyselyyn
   let aakkossarjat = Array.from(data.sarjat).sort((a, b) => {
@@ -108,7 +117,11 @@ function start(data) {
 
   /**
    * Luo jäseninputteihin tarkistuksia,
-   * kun on tehty jonkinlainen muutos 
+   * kun on tehty jonkinlainen muutos
+   * Jos on pelkkiä whitespce-merkkejä,
+   * lisää customvalidityn "Anna nimi kirjaimin"
+   * Lisäksi tarkistaa, onko kaikki jäsenet tyhjiä muutoksen jälkeen
+   * kaikkiJasenetTyhjiaTsekkausMuutoksineen avulla
    * @param {Event} e 
    */
   function muutoksetJaseneen(e) {
@@ -146,17 +159,54 @@ function start(data) {
     }
   }
 
-  // Tallennusyritys nappia painamalla, ei välttämättä submit-tapahtuma (?)
+/*   // Tallennusyritys nappia painamalla, ei välttämättä submit-tapahtuma (?)
   document.querySelector('input[type="submit"]').addEventListener("click", function (e) {
-    let onkoOK = tarkistaJasenet();
-    console.log(onkoOK);
-  });
+    tarkistaJasenet();
+  }); */
 
-  // Tallennustapahtumat
+  // Submit-tapahtuma
   document.forms.joukkuelomake.addEventListener("submit", function(e) {
     e.preventDefault();
-    let ok = tarkistaJasenet();
+    // kokonaistarkistus
     document.forms.joukkuelomake.reportValidity();
+
+    // jos kaikki kunnossa, lisäys dataan ja joukkueennimiin
+    // etsitään valittu sarja ja sen perusteella oikea id datasta
+    let sarjannimi = "";
+    for (let elem of document.forms.joukkuelomake.joukkuekysely.elements) {
+      if (elem.getAttribute("checked") == "checked") {
+        sarjannimi = elem.parentElement.textContent;
+        break;
+      } 
+    }
+    let sarjanid = "";
+    for (let sarja of data.sarjat) {
+      if (sarja == sarjannimi) {
+        sarjanid = sarja.id;
+        break;
+      }
+    }
+
+    // lisättävän joukkueen tiedot
+    let uusijoukkue = {
+      "aika": "00:00:00",
+      "jasenet": tarkistaJasenet(),
+      "leimaustapa": ["0"],
+      "matka": "0",
+      "nimi": jnimiInput.value,
+      "pisteet": "0",
+      "rastileimaukset": [],
+      "sarja": sarjanid
+    };
+
+    // joukkueen lisäys dataan, joukkueennimiin ja datan päivitys localstorageen
+    data.joukkueet.push(uusijoukkue);
+    joukkueennimetIsolla.add(jnimiInput.value.trim().toUpperCase());
+    localStorage.setItem("TIEA2120-vt3-2022s", JSON.stringify(data));
+
+    // formin tyhjennys alkuperäiseen muotoon
+    document.forms.joukkuelomake.reset();
+    console.log(data.joukkueet);
   });
 
   /**
@@ -164,7 +214,7 @@ function start(data) {
    * - jos annettu nimi on tyhjä tai siinä on muu virhe,
    * lisää "Joukkueella on oltava vähintään yksi jäsen" ja palauttaa false
    * - jos annettuja (sopivia) nimiä on vähintään yksi, palauttaa true
-   * @returns true jos jäsenlistassa väh. 1 sopiva nimi, false jos ei ole
+   * @returns {Array} jos jäseniä, jäsenien nimien lista, jos ei jäseniä, undefined
    */
   function tarkistaJasenet() {
     let jasenlista = new Set();
@@ -178,12 +228,12 @@ function start(data) {
       }
     }
     if (jasenlista.size > 0) {
-      return true;
+      return jasenlista;
     } else {
       for (let jasen of jaseninputit) {
         jasen.setCustomValidity("Joukkueella on oltava vähintään yksi jäsen");
       }
-      return false;
+      return undefined;
     }
   }
 
