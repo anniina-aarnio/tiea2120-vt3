@@ -119,6 +119,33 @@ function start(data) {
     }
   }
 
+  // Tallennustapahtumat
+  document.forms.joukkuelomake.addEventListener("submit", function(e) {
+    e.preventDefault();
+    let ok = tarkistaJasenet();
+    document.forms.joukkuelomake.reportValidity();
+  });
+
+  function tarkistaJasenet() {
+    let jasenlista = new Set();
+    for (let jasen of jaseninputit) {
+      // jos tyhjä tai validity on false
+      if (jasen.value == "" || jasen.validity.checkValidityState() == false) {
+        
+      } else {
+        jasenlista.add(jasen.value.trim());
+      }
+    }
+    if (jasenlista.size > 0) {
+      return true;
+    } else {
+      for (let jasen of jaseninputit) {
+        jasen.setCustomValidity("Joukkueella on oltava vähintään yksi jäsen");
+      }
+      return false;
+    }
+  }
+
 
 }
 
