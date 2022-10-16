@@ -168,14 +168,14 @@ function start(data) {
     // etsitään valittu sarja ja sen perusteella oikea id datasta
     let sarjannimi = "";
     for (let elem of document.forms.joukkuelomake.joukkuekysely.elements) {
-      if (elem.getAttribute("checked") == "checked") {
+      if (elem.checked) {
         sarjannimi = elem.parentElement.textContent;
         break;
       } 
     }
     let sarjanid = "";
     for (let sarja of data.sarjat) {
-      if (sarja == sarjannimi) {
+      if (sarja.nimi == sarjannimi) {
         sarjanid = sarja.id;
         break;
       }
