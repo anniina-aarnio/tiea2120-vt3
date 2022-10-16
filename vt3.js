@@ -64,6 +64,8 @@ function start(data) {
   for (let joukkue of Array.from(data.joukkueet).sort(nimiJarjestys)) {
     joukkueennimetIsolla.add(joukkue.nimi.trim().toUpperCase());
   }
+
+  luoJoukkuelista();
   
 
   // ------ FORMIN PYÖRITTELY ------
@@ -201,6 +203,8 @@ function start(data) {
     console.log(data.joukkueet);
 
     // joukkuelistan päivittäminen
+    tyhjennaJoukkuelista();
+    luoJoukkuelista();
   });
 
   /**
@@ -231,9 +235,17 @@ function start(data) {
     }
   }
 
+  function tyhjennaJoukkuelista() {
+    let emolista = document.getElementById("joukkuelista");
+    while (emolista.firstChild) {
+      emolista.firstChild.remove();
+    }
+  }
+
   function luoJoukkuelista() {
     let emolista = document.getElementById("joukkuelista");
     for (let joukkue of Array.from(data.joukkueet).sort(nimiJarjestys)) {
+
       // joukkueen nimi ja sarja boldattuna
       let li = document.createElement("li");
       li.textContent = joukkue.nimi + " ";
@@ -247,13 +259,22 @@ function start(data) {
       }
       li.appendChild(sarja);
 
+      // jäsenien lisääminen alalistaksi
       let alaul = document.createElement("ul");
-      for (let jasen of Array.from(joukkue.jasenet).sort(nimiJarjestys)) {
+      if (typeof(joukkue.jasenet) === "string") {
         let alali = document.createElement("li");
-        alali.textContent = jasen;
+        alali.textContent = joukkue.jasenet;
         alaul.appendChild(alali);
+      } else {
+        for (let jasen of Array.from(joukkue.jasenet).sort(jasenJarjestys)) {
+          let alali = document.createElement("li");
+          alali.textContent = jasen;
+          alaul.appendChild(alali);
+        }
       }
 
+      // nimi + boldattu sarja ja alalista lisätään emolistaan
+      emolista.appendChild(li).appendChild(alaul);
     }
   }
 }
@@ -266,10 +287,26 @@ function start(data) {
  * @return {Number} -1 jos a ennen b, 1 jos b ennen a, 0 jos samat
  */
 function nimiJarjestys(a,b) {
-  if (a.nimi < b.nimi) {
+  if (a.nimi.toUpperCase() < b.nimi.toUpperCase()) {
     return -1;
   }
-  if (b.nimi < a.nimi) {
+  if (b.nimi.toUpperCase() < a.nimi.toUpperCase()) {
+    return 1;
+  }
+  return 0;
+}
+
+/**
+ * Jäsenen nimien vertailu
+ * @param {String} a 
+ * @param {String} b
+ * @return {Number} -1 jos a on ennen b, 1 jos b on ennen a, 0 jos samat
+ */
+function jasenJarjestys(a,b) {
+  if (a.toUpperCase() < b.toUpperCase()) {
+    return -1;
+  }
+  if (b.toUpperCase() < a.toUpperCase()) {
     return 1;
   }
   return 0;
