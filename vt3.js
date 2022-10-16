@@ -159,6 +159,13 @@ function start(data) {
     document.forms.joukkuelomake.reportValidity();
   });
 
+  /**
+   * Tarkistaa jäsenkyselystä kenttien validityt:
+   * - jos annettu nimi on tyhjä tai siinä on muu virhe,
+   * lisää "Joukkueella on oltava vähintään yksi jäsen" ja palauttaa false
+   * - jos annettuja (sopivia) nimiä on vähintään yksi, palauttaa true
+   * @returns true jos jäsenlistassa väh. 1 sopiva nimi, false jos ei ole
+   */
   function tarkistaJasenet() {
     let jasenlista = new Set();
     for (let jasen of jaseninputit) {
