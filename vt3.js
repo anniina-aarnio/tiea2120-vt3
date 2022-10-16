@@ -68,21 +68,17 @@ function start(data) {
       return 0;
     }
   });
-  let eiAsetettu = true;
   for (let sarja of aakkossarjat) {
     let labeli = document.createElement("label");
     labeli.textContent = sarja.nimi;
     let radioinput = document.createElement("input");
     radioinput.setAttribute("type", "radio");
     radioinput.setAttribute("name", "sarjaradio");
-
-    if (eiAsetettu) {
-      radioinput.setAttribute("checked", "checked");
-      eiAsetettu = false;
-    }
     document.querySelector('span[id="sarjaradiopaikka"]')
       .appendChild(labeli).appendChild(radioinput);
   }
+  // asetetaan ensimmäiseen radionappiin checked
+  document.querySelector('input[type="radio"]').setAttribute("checked", "checked");
 
   // Joukkueen nimen hallinnointi
 
