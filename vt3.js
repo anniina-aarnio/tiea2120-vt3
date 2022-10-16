@@ -101,6 +101,7 @@ function start(data) {
 
   // Jäsenien tietojen hallinnointi
   let jaseninputit = document.querySelectorAll('input[name^="jasen"]');
+  kaikkiJasenetTyhjiaTsekkausMuutoksineen();
   for (let inputti of jaseninputit) {
     inputti.addEventListener("input", muutoksetJaseneen);
   }
@@ -117,7 +118,39 @@ function start(data) {
     } else {
       inputti.setCustomValidity("");
     }
+    kaikkiJasenetTyhjiaTsekkausMuutoksineen();
   }
+
+  /**
+   * Tarkistaa, onko kaikki jäsenet tyhjiä
+   * Jos on tyhjiä, lisää kaikkiin "Joukkueella on oltava vähintään yksi jäsen"
+   * custom validityyn
+   * Jos on vähintään yksi ei-tyhjä, poistaa custom-validityt
+   */
+  function kaikkiJasenetTyhjiaTsekkausMuutoksineen() {
+    let jokinEiTyhja = false;
+    for (let inputti of jaseninputit) {
+      // jos ei tyhjä (eli edes whitespacea...)
+      if (inputti.value != "") {
+        jokinEiTyhja = true;
+      }
+    }
+    if (jokinEiTyhja) {
+      for (let inputti of jaseninputit) {
+        inputti.setCustomValidity("");
+      }
+    } else {
+      for (let inputti of jaseninputit) {
+        inputti.setCustomValidity("Joukkueella on oltava vähintään yksi jäsen");
+      }
+    }
+  }
+
+  // Tallennusyritys nappia painamalla, ei välttämättä submit-tapahtuma (?)
+  document.querySelector('input[type="submit"]').addEventListener("click", function (e) {
+    let onkoOK = tarkistaJasenet();
+    console.log(onkoOK);
+  });
 
   // Tallennustapahtumat
   document.forms.joukkuelomake.addEventListener("submit", function(e) {
@@ -130,7 +163,8 @@ function start(data) {
     let jasenlista = new Set();
     for (let jasen of jaseninputit) {
       // jos tyhjä tai validity on false
-      if (jasen.value == "" || jasen.validity.checkValidityState() == false) {
+      let annettunimi = jasen.value.trim();
+      if (annettunimi == "" || jasen.checkValidity() == false) {
         
       } else {
         jasenlista.add(jasen.value.trim());
