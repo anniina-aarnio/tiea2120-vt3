@@ -81,16 +81,20 @@ function start(data) {
     }
   });
 
+  // Leimaustapojen tiedot joukkuekyselyyn
+  let aakkosleimaustavat = Array.from(data.leimaustavat).sort(merkkijonoJarjestys);
+  for (let leimaustapa of aakkosleimaustavat) {
+    let labeli = document.createElement("label");
+    labeli.textContent = leimaustapa;
+    let checkboxinput = document.createElement("input");
+    checkboxinput.setAttribute("type", "checkbox");
+    document.querySelector('span[id="leimaustapapaikka"]')
+      .appendChild(labeli).appendChild(checkboxinput);
+    // tässä kohtaa jo addEventListener ???
+  }
+
   // Sarjojen tiedot joukkuekyselyyn
-  let aakkossarjat = Array.from(data.sarjat).sort((a, b) => {
-    if (a.nimi.trim() < b.nimi.trim()) {
-      return -1;
-    } else if (b.nimi.trim() < a.nimi.trim()) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
+  let aakkossarjat = Array.from(data.sarjat).sort(nimiJarjestys);
   for (let sarja of aakkossarjat) {
     let labeli = document.createElement("label");
     labeli.textContent = sarja.nimi;
@@ -267,7 +271,7 @@ function start(data) {
         alali.textContent = joukkue.jasenet;
         alaul.appendChild(alali);
       } else {
-        for (let jasen of Array.from(joukkue.jasenet).sort(jasenJarjestys)) {
+        for (let jasen of Array.from(joukkue.jasenet).sort(merkkijonoJarjestys)) {
           let alali = document.createElement("li");
           alali.textContent = jasen;
           alaul.appendChild(alali);
@@ -303,7 +307,7 @@ function nimiJarjestys(a,b) {
  * @param {String} b
  * @return {Number} -1 jos a on ennen b, 1 jos b on ennen a, 0 jos samat
  */
-function jasenJarjestys(a,b) {
+function merkkijonoJarjestys(a,b) {
   if (a.toUpperCase() < b.toUpperCase()) {
     return -1;
   }

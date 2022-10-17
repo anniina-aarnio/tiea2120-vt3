@@ -36,5 +36,8 @@ p span {
 }
 
 p span label {
+   text-align: right;
+   display: block;
+   padding: .1em;
    margin: 0;
 }
