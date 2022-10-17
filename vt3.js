@@ -65,6 +65,7 @@ function start(data) {
     joukkueennimetIsolla.add(joukkue.nimi.trim().toUpperCase());
   }
 
+  // ------ JOUKKUELISTAUS ALAS ------
   luoJoukkuelista();
   
 
