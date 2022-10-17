@@ -262,6 +262,16 @@ function start(data) {
       }
       li.appendChild(sarja);
 
+      // perään leimaustavat listana esim: (GPS, NFC)
+      let leimausteksti = " (";
+      let leimaustapanimilista = [];
+      for (let lt of joukkue.leimaustapa) {
+        leimaustapanimilista.push(data.leimaustavat[Number(lt)]);
+      }
+      let leimaustekstit = leimaustapanimilista.join(', ');
+      leimausteksti += leimaustekstit +")";
+      li.appendChild(document.createTextNode(leimausteksti));
+
       // jäsenien lisääminen alalistaksi
       let alaul = document.createElement("ul");
       for (let jasen of Array.from(joukkue.jasenet).sort(merkkijonoJarjestys)) {
