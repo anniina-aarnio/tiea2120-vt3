@@ -28,7 +28,7 @@ input[type="text"] {
 p {
    clear: both;
    max-width: 25em;
-   margin: .5em;
+   padding: .5em;
 }
 
 p span {

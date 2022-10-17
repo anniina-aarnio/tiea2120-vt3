@@ -90,6 +90,7 @@ function start(data) {
     checkboxinput.setAttribute("type", "checkbox");
     document.querySelector('span[id="leimaustapapaikka"]')
       .appendChild(labeli).appendChild(checkboxinput);
+
     // tässä kohtaa jo addEventListener ???
   }
 
@@ -158,11 +159,6 @@ function start(data) {
     }
   }
 
-/*   // Tallennusyritys nappia painamalla, ei välttämättä submit-tapahtuma (?)
-  document.querySelector('input[type="submit"]').addEventListener("click", function (e) {
-    tarkistaJasenet();
-  }); */
-
   // Submit-tapahtuma
   document.forms.joukkuelomake.addEventListener("submit", function(e) {
     e.preventDefault();
@@ -185,6 +181,8 @@ function start(data) {
         break;
       }
     }
+
+    // etsitään valitut leimaustavat ja sen perusteella oikea 
 
     // lisättävän joukkueen tiedot
     let uusijoukkue = {
@@ -266,16 +264,10 @@ function start(data) {
 
       // jäsenien lisääminen alalistaksi
       let alaul = document.createElement("ul");
-      if (typeof(joukkue.jasenet) === "string") {
-        let alali = document.createElement("li");
-        alali.textContent = joukkue.jasenet;
-        alaul.appendChild(alali);
-      } else {
-        for (let jasen of Array.from(joukkue.jasenet).sort(merkkijonoJarjestys)) {
+      for (let jasen of Array.from(joukkue.jasenet).sort(merkkijonoJarjestys)) {
           let alali = document.createElement("li");
           alali.textContent = jasen;
           alaul.appendChild(alali);
-        }
       }
 
       // nimi + boldattu sarja ja alalista lisätään emolistaan
