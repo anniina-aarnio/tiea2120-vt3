@@ -28,15 +28,16 @@ function alustus() {
                return;
            }
      }
+     
      // poistetaan sivun osoitteesta ?reset=1, jotta ei koko ajan lataa uutta dataa
      // manipuloidaan samalla selaimen selainhistoriaa
      // https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
      history.pushState({"foo":"bar"}, "VT3", window.location.href.replace("?reset="+reset, ""));
      // ladataan asynkronisesti uusi, jos reset =! null tai tallennettua dataa ei ole
      // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-	fetch('https://appro.mit.jyu.fi/cgi-bin/tiea2120/randomize_json.cgi')
-	    .then(response => response.json())
-	    .then(function(data) {
+	    fetch('https://appro.mit.jyu.fi/cgi-bin/tiea2120/randomize_json.cgi')
+	        .then(response => response.json())
+	        .then(function(data) {
                console.log("Ladattiin uusi data", data);
                // tallennetaan data localStorageen. Täytyy muuttaa merkkijonoksi
 	       // https://developer.mozilla.org/en-US/docs/Web/API/Storage/setItem
@@ -129,7 +130,7 @@ function start(data) {
             input.setCustomValidity("Valitse vähintään yksi kurssi");
         }
     }
-}
+  }
 
 
   // Sarjojen tiedot joukkuekyselyyn
@@ -146,6 +147,7 @@ function start(data) {
   // asetetaan ensimmäiseen radionappiin checked
   document.querySelector('input[type="radio"]').setAttribute("checked", "checked");
 
+
   // Jäsenien tietojen hallinnointi
   let jaseninputit = document.querySelectorAll('input[name^="jasen"]');
   kaikkiJasenetTyhjiaTsekkausMuutoksineen();
@@ -154,6 +156,9 @@ function start(data) {
   }
 
   /**
+   * Lisää ja poistaa jäsenkenttiä siten,
+   * että on aina yksi tyhjä jäsenkenttä.
+   * TODO alussa ja tyhjennettäessä pitäisi olla kaksi
    * Luo jäseninputteihin tarkistuksia,
    * kun on tehty jonkinlainen muutos
    * Jos on pelkkiä whitespce-merkkejä,
@@ -163,6 +168,46 @@ function start(data) {
    * @param {Event} e 
    */
   function muutoksetJaseneen(e) {
+    // lisää ja poistaa jäsenkenttiä siten, että on yksi tyhjä jäsenkenttä
+    let tyhja = false;
+
+    // onko tämä dynaaminen ?? tarvitaanko täälläkin vaikka jo kerran funktion ulkopuolella?
+    jaseninputit = document.forms.joukkuelomake.jasenkysely.getElementsByTagName("input");
+    for (let i = jaseninputit.length-1; i >= 0; i--) {
+      let input = jaseninputit[i];
+      
+      // jos tyhjä ja on jo aiemmin löydetty tyhjä niin poistetaan
+      if (input.value.trim() == "" && tyhja) {
+        // jasenlabel + input poistetaan
+        jaseninputit[i].parentNode.remove();
+      }
+
+      // onko tyhjä?
+      if (input.value.trim() == "") {
+        tyhja = true;
+      }
+    }
+
+    // jos ei ollut tyhjiä kenttiä niin lisätään yksi
+    if (!tyhja || jaseninputit.length < 2) {
+      let label = document.createElement("label");
+      label.textContent = "Jäsen";
+      let input = document.createElement("input");
+      input.setAttribute("type", "text");
+      input.setAttribute("pattern", ".*\S+.*\S+");
+      input.addEventListener("input", muutoksetJaseneen);
+      document.forms["joukkuelomake"]["jasenkysely"].appendChild(label).appendChild(input);
+    }
+
+    // tehdään jäsenille numerointi
+    for (let i= 0; i < jaseninputit.length; i++) {
+      let label = jaseninputit[i].parentNode;
+      label.firstChild.nodeValue = "Jäsen " + (i+1);
+    }
+
+    // varmistaa, että on aina väh. 2 jäsenkenttää
+
+    // validitypuoli
     let inputti = e.target;
     if (inputti.validity.patternMismatch) {
       inputti.setCustomValidity("Anna nimi kirjaimin");
