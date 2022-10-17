@@ -67,6 +67,7 @@ function start(data) {
 
   // ------ JOUKKUELISTAUS ALAS ------
   luoJoukkuelista();
+  let leimaustapaSet = new Set();
   
 
   // ------ FORMIN PYÖRITTELY ------
@@ -88,11 +89,48 @@ function start(data) {
     labeli.textContent = leimaustapa;
     let checkboxinput = document.createElement("input");
     checkboxinput.setAttribute("type", "checkbox");
+    checkboxinput.value = leimaustapa;
+    checkboxinput.addEventListener("change", lisaaSettiin);
     document.querySelector('span[id="leimaustapapaikka"]')
       .appendChild(labeli).appendChild(checkboxinput);
-
-    // tässä kohtaa jo addEventListener ???
   }
+  asetaValiditytJokaiseenCheckboxiin();
+
+  /**
+   * Jos change-tapahtumassa valittiin uusi leimaustapa,
+   * lisää valitun leimaustapaSetiin ja poistaa validity-huomautukset
+   * Jos poistaa leimaustavan, tarkistaa pitääkö lisätä validity-huomautukset
+   * kaikkiin ja lisää jos tarvitsee.
+   * @param {Event} e checkattu/uncheckattu checkbox
+   */
+  function lisaaSettiin(e) {
+    let leimaust = e.target;
+    if (leimaust.checked) {
+        leimaustapaSet.add(leimaust.parentNode.textContent);
+    } else {
+        leimaustapaSet.delete(leimaust.parentNode.textContent);
+    }
+
+    asetaValiditytJokaiseenCheckboxiin();
+  }
+
+  /**
+   * Tarkistaa checkboxit:
+   * - jos edes yksi on valittuna, poistaa customvalidityt kaikista checkboxeista
+   * - jos ei yhtään ole valittuna, lisää kaikkiin checkboxeihin customvalidityn
+   */
+  function asetaValiditytJokaiseenCheckboxiin() {
+    if (leimaustapaSet.size > 0) {
+        for (let input of document.querySelectorAll('input[type="checkbox"]')) {
+            input.setCustomValidity("");
+        }
+    } else {
+        for (let input of document.querySelectorAll('input[type="checkbox"]')) {
+            input.setCustomValidity("Valitse vähintään yksi kurssi");
+        }
+    }
+}
+
 
   // Sarjojen tiedot joukkuekyselyyn
   let aakkossarjat = Array.from(data.sarjat).sort(nimiJarjestys);
@@ -183,12 +221,20 @@ function start(data) {
     }
 
     // etsitään valitut leimaustavat ja sen perusteella oikea 
+    let uudenJoukkueenLeimaustavat = [];
+    for (let lt of leimaustapaSet) {
+      for (let i = 0; i < data.leimaustavat.length; i++) {
+        if (data.leimaustavat[i] == lt) {
+          uudenJoukkueenLeimaustavat.push(i);
+        }
+      }
+    }
 
     // lisättävän joukkueen tiedot
     let uusijoukkue = {
       "aika": "00:00:00",
       "jasenet": tarkistaJasenet(),
-      "leimaustapa": ["0"],
+      "leimaustapa": uudenJoukkueenLeimaustavat,
       "matka": "0",
       "nimi": jnimiInput.value,
       "pisteet": "0",
