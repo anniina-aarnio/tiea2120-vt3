@@ -225,7 +225,7 @@ function start(data) {
     for (let lt of leimaustapaSet) {
       for (let i = 0; i < data.leimaustavat.length; i++) {
         if (data.leimaustavat[i] == lt) {
-          uudenJoukkueenLeimaustavat.push(i);
+          uudenJoukkueenLeimaustavat.push(i.toString());
         }
       }
     }
