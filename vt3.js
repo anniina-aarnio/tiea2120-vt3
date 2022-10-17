@@ -340,6 +340,10 @@ function start(data) {
     return palautettavaArray;
   }
 
+  /**
+   * Tyhjentää kaikki listat ja alalistat joukkuelistasta
+   * sivun alareunasta
+   */
   function tyhjennaJoukkuelista() {
     let emolista = document.getElementById("joukkuelista");
     while (emolista.firstChild) {
@@ -347,6 +351,9 @@ function start(data) {
     }
   }
 
+  /**
+   * Luo tyhjälle paikalle uuden joukkuelistan datassa olevien joukkueiden perusteella
+   */
   function luoJoukkuelista() {
     let emolista = document.getElementById("joukkuelista");
     for (let joukkue of Array.from(data.joukkueet).sort(nimiJarjestys)) {
