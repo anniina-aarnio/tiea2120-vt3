@@ -150,7 +150,7 @@ function start(data) {
 
   // Jäsenien tietojen hallinnointi
   let jaseninputit = document.querySelectorAll('input[name^="jasen"]');
-  kaikkiJasenetTyhjiaTsekkausMuutoksineen();
+  kaikkiJasenetTyhjiaJaUniikkejaTsekkausMuutoksineen();
   for (let inputti of jaseninputit) {
     inputti.addEventListener("input", muutoksetJaseneen);
   }
@@ -195,7 +195,7 @@ function start(data) {
       label.textContent = "Jäsen";
       let input = document.createElement("input");
       input.setAttribute("type", "text");
-      input.setAttribute("pattern", ".*\S+.*\S+");
+      input.setAttribute("pattern", ".*\\S+.*\\S+.*");
       input.addEventListener("input", muutoksetJaseneen);
       document.forms["joukkuelomake"]["jasenkysely"].appendChild(label).appendChild(input);
     }
@@ -213,7 +213,7 @@ function start(data) {
     } else {
       inputti.setCustomValidity("");
     }
-    kaikkiJasenetTyhjiaTsekkausMuutoksineen();
+    kaikkiJasenetTyhjiaJaUniikkejaTsekkausMuutoksineen();
   }
 
   /**
@@ -222,13 +222,20 @@ function start(data) {
    * custom validityyn
    * Jos on vähintään yksi ei-tyhjä, poistaa custom-validityt
    */
-  function kaikkiJasenetTyhjiaTsekkausMuutoksineen() {
+  function kaikkiJasenetTyhjiaJaUniikkejaTsekkausMuutoksineen() {
     let eiTyhjia = 0;
+    let jaseniennimet = new Set();
     for (let inputti of jaseninputit) {
+      let nimi = inputti.value.trim().toUpperCase();
       // jos ei tyhjä (eli edes whitespacea...)
-      if (inputti.value != "") {
+      if (nimi != "") {
         eiTyhjia += 1;
       }
+
+      if (jaseniennimet.has(nimi)) {
+        inputti.setCustomValidity("Ei voi olla kahta samaa nimeä");
+      }
+      jaseniennimet.add(nimi);
     }
     if (eiTyhjia >= 2) {
       for (let inputti of jaseninputit) {
@@ -320,6 +327,8 @@ function start(data) {
         virheita = true;
       } else if (jasenlista.has(annettunimi)) {
         virheita = true;
+        jasen.setCustomValidity("Ei voi olla kahta samaa nimeä");
+        document.forms.joukkuelomake.jasenkysely.reportValidity();
       } else {
         jasenlista.add(annettunimi);
         palautettavaArray.push(jasen.value.trim());
