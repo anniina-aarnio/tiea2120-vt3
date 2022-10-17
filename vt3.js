@@ -206,7 +206,7 @@ function start(data) {
     // jos kaikki kunnossa, lisäys dataan ja joukkueennimiin
     // etsitään valittu sarja ja sen perusteella oikea id datasta
     let sarjannimi = "";
-    for (let elem of document.forms.joukkuelomake.joukkuekysely.elements) {
+    for (let elem of document.querySelectorAll('input[type="radio"]')) {
       if (elem.checked) {
         sarjannimi = elem.parentElement.textContent;
         break;
