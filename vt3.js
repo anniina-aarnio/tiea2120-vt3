@@ -114,9 +114,9 @@ function start(data) {
   function lisaaSettiin(e) {
     let leimaust = e.target;
     if (leimaust.checked) {
-        leimaustapaSet.add(leimaust.parentNode.textContent);
+        leimaustapaSet.add(leimaust.value);
     } else {
-        leimaustapaSet.delete(leimaust.parentNode.textContent);
+        leimaustapaSet.delete(leimaust.value);
     }
 
     asetaValiditytJokaiseenCheckboxiin();
@@ -262,6 +262,17 @@ function start(data) {
     formi.joukkueen_nimi.value = joukkue.nimi;
     
     // etsitään valituksi leimaustavat
+    leimaustapaSet.clear();
+    for (let leima of formi.querySelectorAll('input[type="checkbox"]')) {
+      for (let nro of joukkue.leimaustapa) {
+        if (leima.value === nro || leimaustapaSet.has(leima.value)) {
+          leimaustapaSet.add(nro);
+          leima.setAttribute("checked", "checked");
+        } else {
+          leima.removeAttribute("checked");
+        }
+      }
+    }
 
     // sarja
 
@@ -288,10 +299,6 @@ function start(data) {
       }
       document.forms["joukkuelomake"]["jasenkysely"].appendChild(label).appendChild(input);
     }
-
-
-
-
   }
 
   // Submit-tapahtuma
@@ -324,14 +331,6 @@ function start(data) {
     for (let lt of document.forms.joukkuelomake.querySelectorAll('input[type="checkbox"]:checked')) {
       uudenJoukkueenLeimaustavat.push(lt.value);
     }
-/* 
-    for (let lt of leimaustapaSet) {
-      for (let i = 0; i < data.leimaustavat.length; i++) {
-        if (data.leimaustavat[i] == lt) {
-          uudenJoukkueenLeimaustavat.push(i.toString());
-        }
-      }
-    } */
 
     // lisättävän joukkueen tiedot
     let uusijoukkue = {
