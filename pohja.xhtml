@@ -13,6 +13,7 @@
   -->
         <h1 id="tulospalveluOtsikko">Tulospalvelu</h1>
 
+        <h2 id="joukkueenlisaysOtsikko">Joukkueen lisääminen</h2>
         <form id="joukkuelomake" action="#">
             <fieldset id="joukkuekysely">
                 <legend>Joukkueen tiedot</legend>
@@ -53,10 +54,28 @@
                         pattern=".*\S+.*\S+.*" />
                 </label>
             </fieldset>
-            <input type="submit" name="tallenna" id="tallenna" value="Tallenna" />
+            <input type="submit" name="tallenna_joukkue" id="tallenna_joukkue" value="Tallenna" />
         </form>
+
         <ul id="joukkuelista">
         </ul>
+
+        <h3>Leimaustapojen lisääminen</h3>
+        <form id="leimaustapalomake">
+            <fieldset>
+                <legend>Leimaustapa</legend>
+                <label>
+                    Nimi
+                    <input id="leimaustapa_nimi"
+                        name="leimaustapa_nimi"
+                        type="text"
+                        minlength="2"
+                        pattern=".*\S+.\S+.*"
+                        required="required" />
+                </label>
+            </fieldset>
+            <input type="submit" name="tallenna_leimaustapa" id="tallenna_leimaustapa" value="Tallenna" />
+        </form>
 
 <!-- Tästä eteenpäin sivun sisältöä ei saa muuttaa -->
 <!-- Sivun validoinnin voit tehdä milloin tahansa näppäinyhdistelmällä CTRL+ALT+V -->

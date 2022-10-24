@@ -60,7 +60,7 @@ function start(data) {
    esim. http://users.jyu.fi/~omatunnus/TIEA2120/vt2/pohja.xhtml?reset=1 */
 
   // ------ DATAN PYÖRITTELY ------
-  // Joukkueen nimet mappiin aakkosjärjestykseen
+  // Joukkueen nimet settiin aakkosjärjestykseen
   let joukkueennimetIsolla = new Set();
   for (let joukkue of Array.from(data.joukkueet).sort(nimiJarjestys)) {
     joukkueennimetIsolla.add(joukkue.nimi.trim().toUpperCase());
@@ -70,11 +70,62 @@ function start(data) {
   luoJoukkuelista();
   let leimaustapaSet = new Set();
 
+  // ------ LEIMAUSTAPAFORMIN PYÖRITTELY ------
+  let leimaustavatIsolla = new Set();
+  for (let lt of Array.from(data.leimaustavat).sort()) {
+    leimaustavatIsolla.add(lt.trim().toUpperCase());
+  }
+  let ltNimiInput = document.forms.leimaustapalomake.leimaustapa_nimi;
+  ltNimiInput.addEventListener("input", function(e) {
+    let nimi = ltNimiInput.value.trim().toUpperCase();
+    if (leimaustavatIsolla.has(nimi)) {
+      ltNimiInput.setCustomValidity("Nimi on jo käytössä");
+    } else {
+      ltNimiInput.setCustomValidity("");
+    }
+  });
 
-  // ------ FORMIN PYÖRITTELY ------
+  document.forms.leimaustapalomake.addEventListener("submit", leimaustapaTallennus);
+
+  /**
+   * Tarkistaa leimaustavan oikeellisuuden:
+   * - vähintään 2 merkkiä (jotka ei ole whitespacea)
+   * - uniikki
+   * @param {Event} e 
+   */
+  function leimaustapaTallennus(e) {
+    e.preventDefault();
+    // jos kaikki kunnossa
+    if (document.forms.leimaustapalomake.reportValidity()) {
+      // tallenna leimaustapoihin
+      data.leimaustavat.push(ltNimiInput.value.trim());
+      leimaustavatIsolla.add(ltNimiInput.value.trim().toUpperCase());
+
+      // tallenna data
+      localStorage.setItem("TIEA2120-vt3-2022s", JSON.stringify(data));
+
+      // tyhjennä tämä formi
+      document.forms.leimaustapalomake.reset();
+
+      // täydennä joukkueformiin tieto
+      uusiLeimaustapakysely();
+    }
+  }
+
+  function uusiLeimaustapakysely() {
+    // tyhjennetään leimaustavat
+    for (let input of document.forms.joukkuelomake.querySelectorAll('input[type="checkbox"]')) {
+      input.parentNode.remove();
+    }
+
+    taytaLeimaustavatJoukkuekyselyyn();
+  }
+
+
+  // ------ JOUKKUEFORMIN PYÖRITTELY ------
 
   // Tallennusnappiin tieto, onko kyseessä uusi joukkue (null) vai muokattava joukkue (joukkueen viite)
-  let tallennusnappi = document.forms.joukkuelomake.tallenna;
+  let tallennusnappi = document.forms.joukkuelomake.tallenna_joukkue;
   tallennusnappi.joukkue = null;
 
   // Joukkueen nimen käsittely
@@ -89,25 +140,33 @@ function start(data) {
   });
 
   // Leimaustapojen tiedot joukkuekyselyyn
-  let aakkosleimaustavat = Array.from(data.leimaustavat).sort(merkkijonoJarjestys);
-  for (let leimaustapa of aakkosleimaustavat) {
-    let labeli = document.createElement("label");
-    labeli.textContent = leimaustapa;
-    let checkboxinput = document.createElement("input");
-    checkboxinput.setAttribute("type", "checkbox");
-    let indeksi;
-    for (let i = 0; i < data.leimaustavat.length; i++) {
-      if (data.leimaustavat[i] == leimaustapa) {
-        indeksi = String(i);
-        break;
+  taytaLeimaustavatJoukkuekyselyyn();
+
+  /**
+   * Täyttää joukkuelomakkeessa leimaustavat
+   */
+  function taytaLeimaustavatJoukkuekyselyyn() {
+    let aakkosleimaustavat = Array.from(data.leimaustavat).sort(merkkijonoJarjestys);
+    for (let leimaustapa of aakkosleimaustavat) {
+      let labeli = document.createElement("label");
+      labeli.textContent = leimaustapa;
+      let checkboxinput = document.createElement("input");
+      checkboxinput.setAttribute("type", "checkbox");
+      let indeksi;
+      for (let i = 0; i < data.leimaustavat.length; i++) {
+        if (data.leimaustavat[i] == leimaustapa) {
+          indeksi = String(i);
+          break;
+        }
       }
+      checkboxinput.value = indeksi;
+      checkboxinput.addEventListener("change", lisaaSettiin);
+      document.querySelector('span[id="leimaustapapaikka"]')
+        .appendChild(labeli).appendChild(checkboxinput);
     }
-    checkboxinput.value = indeksi;
-    checkboxinput.addEventListener("change", lisaaSettiin);
-    document.querySelector('span[id="leimaustapapaikka"]')
-      .appendChild(labeli).appendChild(checkboxinput);
+    asetaValiditytJokaiseenCheckboxiin();
   }
-  asetaValiditytJokaiseenCheckboxiin();
+
 
   /**
    * Jos change-tapahtumassa valittiin uusi leimaustapa,
@@ -484,7 +543,7 @@ function start(data) {
       // joukkueen nimi ja sarja boldattuna
       let li = document.createElement("li");
       let joukkuenimi = document.createElement("a");
-      joukkuenimi.setAttribute("href", "#tulospalveluOtsikko");
+      joukkuenimi.setAttribute("href", "#joukkueenlisaysOtsikko");
       joukkuenimi.setAttribute("class", "joukkueennimi");
       joukkuenimi.addEventListener("click", (e) => muokkaaJoukkuetta(joukkue));
       joukkuenimi.textContent = joukkue.nimi;
