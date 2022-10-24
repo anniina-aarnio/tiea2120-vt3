@@ -72,6 +72,11 @@ function start(data) {
 
 
   // ------ FORMIN PYÖRITTELY ------
+
+  // Tallennusnappiin tieto, onko kyseessä uusi joukkue (null) vai muokattava joukkue (joukkueen viite)
+  let tallennusnappi = document.forms.joukkuelomake.tallenna;
+  tallennusnappi.joukkue = null;
+
   // Joukkueen nimen käsittely
   let jnimiInput = document.querySelector('input[id="joukkueen_nimi"]');
   jnimiInput.addEventListener("input", function(e) {
@@ -273,6 +278,7 @@ function start(data) {
         }
       }
     }
+    asetaValiditytJokaiseenCheckboxiin();
 
     // sarja
 
@@ -291,14 +297,20 @@ function start(data) {
       let input = document.createElement("input");
       input.setAttribute("type", "text");
       input.setAttribute("pattern", ".*\\S+.*");
-      input.setCustomValidity("Joukkueella on oltava vähintään kaksi jäsentä");
+      if (jasenia < 2) {
+        input.setCustomValidity("Joukkueella on oltava vähintään kaksi jäsentä");
+      }
       input.addEventListener("input", muutoksetJaseneen);
       let jasen = joukkue.jasenet[i];
       if (jasen) {
         input.value = jasen;
+      } else {
+        input.value = "";
       }
       document.forms["joukkuelomake"]["jasenkysely"].appendChild(label).appendChild(input);
     }
+
+    tallennusnappi.joukkue = joukkue;
   }
 
   // Submit-tapahtuma
@@ -332,25 +344,46 @@ function start(data) {
       uudenJoukkueenLeimaustavat.push(lt.value);
     }
 
-    // lisättävän joukkueen tiedot
-    let uusijoukkue = {
-      "aika": "00:00:00",
-      "jasenet": lisattavatjasenet,
-      "leimaustapa": uudenJoukkueenLeimaustavat,
-      "matka": "0",
-      "nimi": jnimiInput.value,
-      "pisteet": "0",
-      "rastileimaukset": [],
-      "sarja": sarjanid
-    };
+    // jos joukkue on muokattava joukkue
+    if (tallennusnappi.joukkue != null) {
+      // poistetaan vanha nimi setistä ja lisätään uusi
+      let joukkueennimiIsolla = tallennusnappi.joukkue.nimi.trim().toUpperCase();
+      joukkueennimetIsolla.delete(joukkueennimiIsolla);
 
-    // joukkueen lisäys dataan, joukkueennimiin ja datan päivitys localstorageen
-    data.joukkueet.push(uusijoukkue);
+      let muokattavaJoukkue;
+      for (let joukkue of data.joukkueet) {
+        if (joukkue == tallennusnappi.joukkue) {
+          muokattavaJoukkue = joukkue;
+          break;
+        }
+      }
+      muokattavaJoukkue.jasenet = lisattavatjasenet;
+      muokattavaJoukkue.leimaustapa = uudenJoukkueenLeimaustavat;
+      muokattavaJoukkue.nimi = jnimiInput.value;
+      muokattavaJoukkue.sarja = sarjanid;
+    } else {
+      // lisättävän joukkueen tiedot
+      let uusijoukkue = {
+        "aika": "00:00:00",
+        "jasenet": lisattavatjasenet,
+        "leimaustapa": uudenJoukkueenLeimaustavat,
+        "matka": "0",
+        "nimi": jnimiInput.value,
+        "pisteet": "0",
+        "rastileimaukset": [],
+        "sarja": sarjanid
+      };
+      // uuden joukkueen lisäys dataan
+      data.joukkueet.push(uusijoukkue);
+    }
+
+    // joukkueen lisäys joukkueennimiin ja datan päivitys localstorageen
     joukkueennimetIsolla.add(jnimiInput.value.trim().toUpperCase());
     localStorage.setItem("TIEA2120-vt3-2022s", JSON.stringify(data));
 
     // formin tyhjennys alkuperäiseen muotoon
     document.forms.joukkuelomake.reset();
+    tallennusnappi.joukkue = null;
     forminJasenetJaValiditytResetissäUusiksi();
 
     console.log(data.joukkueet);
