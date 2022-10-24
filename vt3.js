@@ -382,8 +382,8 @@ function start(data) {
     localStorage.setItem("TIEA2120-vt3-2022s", JSON.stringify(data));
 
     // formin tyhjennys alkuperäiseen muotoon
-    leimaustapaSet.clear();
     document.forms.joukkuelomake.reset();
+    leimaustavatkinTyhjaksi();
     tallennusnappi.joukkue = null;
     forminJasenetJaValiditytResetissäUusiksi();
 
@@ -392,6 +392,13 @@ function start(data) {
     // joukkuelistan päivittäminen
     tyhjennaJoukkuelista();
     luoJoukkuelista();
+  }
+
+  function leimaustavatkinTyhjaksi() {
+    leimaustapaSet.clear();
+    for (let lt of document.forms.joukkuelomake.querySelectorAll('input[type="checkbox"]')) {
+      lt.removeAttribute("checked");
+    }
   }
 
   function forminJasenetJaValiditytResetissäUusiksi() {
