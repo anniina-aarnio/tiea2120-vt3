@@ -158,7 +158,6 @@ function start(data) {
   /**
    * Lisää ja poistaa jäsenkenttiä siten,
    * että on aina yksi tyhjä jäsenkenttä.
-   * TODO alussa ja tyhjennettäessä pitäisi olla kaksi
    * Luo jäseninputteihin tarkistuksia,
    * kun on tehty jonkinlainen muutos
    * Jos on pelkkiä whitespce-merkkejä,
@@ -218,13 +217,13 @@ function start(data) {
 
   /**
    * Tarkistaa, onko kaikki jäsenet tyhjiä
-   * Jos on tyhjiä, lisää kaikkiin "Joukkueella on oltava vähintään yksi jäsen"
+   * Jos on tyhjiä, lisää kaikkiin "Joukkueella on oltava vähintään kaksi jäsentä"
    * custom validityyn
-   * Jos on vähintään yksi ei-tyhjä, poistaa custom-validityt
+   * Jos on vähintään kaksi ei-tyhjää, poistaa custom-validityt
    */
   function kaikkiJasenetTyhjiaJaUniikkejaTsekkausMuutoksineen() {
     let eiTyhjia = 0;
-    let jaseniennimet = new Set();
+
     for (let inputti of jaseninputit) {
       // jos ei tyhjä (eli edes whitespacea...)
       if (inputti.value != "") {
@@ -247,8 +246,11 @@ function start(data) {
     e.preventDefault();
     let lisattavatjasenet = tarkistaJasenet();
     // kokonaistarkistus
-    document.forms.joukkuelomake.reportValidity();
+    let ok = document.forms.joukkuelomake.reportValidity();
 
+    if (!ok) {
+      return;
+    }
     // jos kaikki kunnossa, lisäys dataan ja joukkueennimiin
     // etsitään valittu sarja ja sen perusteella oikea id datasta
     let sarjannimi = "";
@@ -344,14 +346,19 @@ function start(data) {
       if (annettunimi == "" || jasen.checkValidity() == false) {
 
       } else {
-        jasenlista.add(annettunimi);
-        palautettavaArray.push(jasen.value.trim());
+        if (jasenlista.has(annettunimi)) {
+          jasen.setCustomValidity("Ei voi olla kahta samaa nimeä");
+          return undefined;
+        } else {
+          jasenlista.add(annettunimi);
+          palautettavaArray.push(jasen.value.trim());
+        }
       }
     }
 
-    if (jasenlista.size == 0) {
+    if (jasenlista.size <= 1) {
       for (let jasen of jaseninputit) {
-        jasen.setCustomValidity("Joukkueella on oltava vähintään yksi jäsen");
+        jasen.setCustomValidity("Joukkueella on oltava vähintään kaksi jäsentä");
       }
       return undefined;
     }
