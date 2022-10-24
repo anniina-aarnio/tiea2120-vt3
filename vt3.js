@@ -69,6 +69,11 @@ function start(data) {
   // ------ JOUKKUELISTAUS ALAS ------
   luoJoukkuelista();
   let leimaustapaSet = new Set();
+
+  let aelementit = document.getElementsByClassName("joukkueennimi");
+  for (let a of aelementit) {
+          a.addEventListener("click", taytaJoukkueenTiedotLomakkeeseen);
+  }
   
 
   // ------ FORMIN PYÖRITTELY ------
@@ -239,6 +244,23 @@ function start(data) {
         inputti.setCustomValidity("Joukkueella on oltava vähintään kaksi jäsentä");
       }
     }
+  }
+
+  /**
+   * Täyttää klikatun joukkueen tiedot lomakkeeseen
+   * @param {Event} e 
+   */
+  function taytaJoukkueenTiedotLomakkeeseen(e) {
+    let joukkueenNimi = e.target.textContent;
+    let joukkue = {};
+    for (let j of data.joukkueet) {
+      if (j.nimi == joukkueenNimi) {
+        joukkue = j;
+        break;
+      }
+    }
+    console.log(joukkue);
+
   }
 
   // Submit-tapahtuma
