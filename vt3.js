@@ -226,16 +226,10 @@ function start(data) {
     let eiTyhjia = 0;
     let jaseniennimet = new Set();
     for (let inputti of jaseninputit) {
-      let nimi = inputti.value.trim().toUpperCase();
       // jos ei tyhjä (eli edes whitespacea...)
-      if (nimi != "") {
+      if (inputti.value != "") {
         eiTyhjia += 1;
       }
-
-      if (jaseniennimet.has(nimi)) {
-        inputti.setCustomValidity("Ei voi olla kahta samaa nimeä");
-      }
-      jaseniennimet.add(nimi);
     }
     if (eiTyhjia >= 2) {
       for (let inputti of jaseninputit) {
@@ -301,12 +295,37 @@ function start(data) {
 
     // formin tyhjennys alkuperäiseen muotoon
     document.forms.joukkuelomake.reset();
+    forminJasenetJaValiditytResetissäUusiksi();
+
     console.log(data.joukkueet);
 
     // joukkuelistan päivittäminen
     tyhjennaJoukkuelista();
     luoJoukkuelista();
   });
+
+  function forminJasenetJaValiditytResetissäUusiksi() {
+    // leimaustapoihin validityt
+    leimaustapaSet.clear();
+    asetaValiditytJokaiseenCheckboxiin(); // EI JOSTAIN SYYSTÄ PÄIVITYKSEN JÄLKEEN TEE
+
+    // jäsenet uusiksi
+    let jasenkysely = document.forms.joukkuelomake.jasenkysely;
+    for (let i = jasenkysely.elements.length-1; i >= 0; i--) {
+      let input = jasenkysely.elements[i];
+      input.parentNode.remove();
+    }
+    for (let i = 1; i <= 2; i++) {
+      let label = document.createElement("label");
+      label.textContent = "Jäsen " + i;
+      let input = document.createElement("input");
+      input.setAttribute("type", "text");
+      input.setAttribute("pattern", ".*\\S+.*\\S+.*");
+      input.setCustomValidity("Joukkueella on oltava vähintään kaksi jäsentä");
+      input.addEventListener("input", muutoksetJaseneen);
+      document.forms["joukkuelomake"]["jasenkysely"].appendChild(label).appendChild(input);
+    }
+  }
 
   /**
    * Tarkistaa jäsenkyselystä kenttien validityt:
@@ -318,17 +337,12 @@ function start(data) {
    */
   function tarkistaJasenet() {
     let jasenlista = new Set();
-    let virheita = false;
     let palautettavaArray = [];
     for (let jasen of jaseninputit) {
       // jos tyhjä tai validity on false
       let annettunimi = jasen.value.trim().toUpperCase();
       if (annettunimi == "" || jasen.checkValidity() == false) {
-        virheita = true;
-      } else if (jasenlista.has(annettunimi)) {
-        virheita = true;
-        jasen.setCustomValidity("Ei voi olla kahta samaa nimeä");
-        document.forms.joukkuelomake.jasenkysely.reportValidity();
+
       } else {
         jasenlista.add(annettunimi);
         palautettavaArray.push(jasen.value.trim());
@@ -338,11 +352,6 @@ function start(data) {
     if (jasenlista.size == 0) {
       for (let jasen of jaseninputit) {
         jasen.setCustomValidity("Joukkueella on oltava vähintään yksi jäsen");
-      }
-      return undefined;
-    } else if (virheita) {
-      for (let jasen of jaseninputit) {
-        jasen.setCustomValidity("Ei voi olla kahta samaa nimeä");
       }
       return undefined;
     }
