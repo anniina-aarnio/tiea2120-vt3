@@ -258,8 +258,6 @@ function start(data) {
    * @param {*} joukkue viite joukkueen dataan, jolloin joukkuetta helpompi muokata 
    */
   function muokkaaJoukkuetta(joukkue) {
-    console.log(joukkue);
-
     // lisätään olemassaolevat tiedot joukkueeseen
     let formi = document.forms.joukkuelomake;
 
@@ -281,6 +279,13 @@ function start(data) {
     asetaValiditytJokaiseenCheckboxiin();
 
     // sarja
+    for (let s of formi.querySelectorAll('input[name="sarjaradio"]')) {
+      if (s.value == joukkue.sarja) {
+        s.setAttribute("checked", "checked");
+      } else {
+        s.removeAttribute("checked");
+      }
+    }
 
     // tyhjennetään edelliset jäsenet
     // lisätään joukkueen jäsenet ja yksi tyhjä
