@@ -245,7 +245,12 @@ function start(data) {
    * @param {*} joukkue viite joukkueen dataan, jolloin joukkuetta helpompi muokata 
    */
   function muokkaaJoukkuetta(joukkue) {
-    
+    console.log(joukkue);
+    // lisätään olemassaolevat tiedot joukkueeseen
+    let formi = document.forms.joukkuelomake;
+
+    formi.joukkueen_nimi.value = joukkue.nimi;
+
 
 
   }
