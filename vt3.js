@@ -319,15 +319,19 @@ function start(data) {
     // etsitään valittu sarja ja sen perusteella oikea id datasta
     let sarjanid = document.forms.joukkuelomake.querySelector('input[name="sarjaradio"]:checked').value;
 
-    // etsitään valitut leimaustavat ja sen perusteella oikea 
+    // etsitään valitut leimaustavat ja sen perusteella oikea
     let uudenJoukkueenLeimaustavat = [];
+    for (let lt of document.forms.joukkuelomake.querySelectorAll('input[type="checkbox"]:checked')) {
+      uudenJoukkueenLeimaustavat.push(lt.value);
+    }
+/* 
     for (let lt of leimaustapaSet) {
       for (let i = 0; i < data.leimaustavat.length; i++) {
         if (data.leimaustavat[i] == lt) {
           uudenJoukkueenLeimaustavat.push(i.toString());
         }
       }
-    }
+    } */
 
     // lisättävän joukkueen tiedot
     let uusijoukkue = {
