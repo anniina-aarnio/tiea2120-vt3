@@ -90,7 +90,14 @@ function start(data) {
     labeli.textContent = leimaustapa;
     let checkboxinput = document.createElement("input");
     checkboxinput.setAttribute("type", "checkbox");
-    checkboxinput.value = leimaustapa;
+    let indeksi;
+    for (let i = 0; i < data.leimaustavat.length; i++) {
+      if (data.leimaustavat[i] == leimaustapa) {
+        indeksi = String(i);
+        break;
+      }
+    }
+    checkboxinput.value = indeksi;
     checkboxinput.addEventListener("change", lisaaSettiin);
     document.querySelector('span[id="leimaustapapaikka"]')
       .appendChild(labeli).appendChild(checkboxinput);
@@ -140,6 +147,7 @@ function start(data) {
     let radioinput = document.createElement("input");
     radioinput.setAttribute("type", "radio");
     radioinput.setAttribute("name", "sarjaradio");
+    radioinput.value = sarja.id;
     document.querySelector('span[id="sarjaradiopaikka"]')
       .appendChild(labeli).appendChild(radioinput);
   }
@@ -250,6 +258,7 @@ function start(data) {
     // lisätään olemassaolevat tiedot joukkueeseen
     let formi = document.forms.joukkuelomake;
 
+    // joukkueen nimi 
     formi.joukkueen_nimi.value = joukkue.nimi;
     
     // etsitään valituksi leimaustavat
@@ -263,6 +272,7 @@ function start(data) {
       let input = jasenkysely.elements[i];
       input.parentNode.remove();
     }
+    // jäseninputteja vähintään 2 tai sitten jäsenien lukumäärä + 1
     let jasenia = Math.max(joukkue.jasenet.length, (2-1));
     for (let i = 0; i <= jasenia; i++) {
       let label = document.createElement("label");
@@ -307,20 +317,7 @@ function start(data) {
     }
     // jos kaikki kunnossa, lisäys dataan ja joukkueennimiin
     // etsitään valittu sarja ja sen perusteella oikea id datasta
-    let sarjannimi = "";
-    for (let elem of document.querySelectorAll('input[type="radio"]')) {
-      if (elem.checked) {
-        sarjannimi = elem.parentElement.textContent;
-        break;
-      } 
-    }
-    let sarjanid = "";
-    for (let sarja of data.sarjat) {
-      if (sarja.nimi == sarjannimi) {
-        sarjanid = sarja.id;
-        break;
-      }
-    }
+    let sarjanid = document.forms.joukkuelomake.querySelector('input[name="sarjaradio"]:checked').value;
 
     // etsitään valitut leimaustavat ja sen perusteella oikea 
     let uudenJoukkueenLeimaustavat = [];
