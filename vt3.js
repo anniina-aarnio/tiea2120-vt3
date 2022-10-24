@@ -70,12 +70,6 @@ function start(data) {
   luoJoukkuelista();
   let leimaustapaSet = new Set();
 
-  // eventit jos klikkaa joukkueen nimeä
-  let aelementit = document.getElementsByClassName("joukkueennimi");
-  for (let a of aelementit) {
-          a.addEventListener("click", taytaJoukkueenTiedotLomakkeeseen);
-  }
-  
 
   // ------ FORMIN PYÖRITTELY ------
   // Joukkueen nimen käsittely
@@ -248,18 +242,10 @@ function start(data) {
 
   /**
    * Täyttää klikatun joukkueen tiedot lomakkeeseen
-   * @param {Event} e 
+   * @param {*} joukkue viite joukkueen dataan, jolloin joukkuetta helpompi muokata 
    */
-  function taytaJoukkueenTiedotLomakkeeseen(e) {
-    let joukkueenNimi = e.target.textContent;
-    let joukkue = {};
-    for (let j of data.joukkueet) {
-      if (j.nimi == joukkueenNimi) {
-        joukkue = j;
-        break;
-      }
-    }
-    let formi = document.forms["joukkuelomake"];
+  function muokkaaJoukkuetta(joukkue) {
+    
 
 
   }
@@ -422,6 +408,7 @@ function start(data) {
       let joukkuenimi = document.createElement("a");
       joukkuenimi.setAttribute("href", "#tulospalveluOtsikko");
       joukkuenimi.setAttribute("class", "joukkueennimi");
+      joukkuenimi.addEventListener("click", (e) => muokkaaJoukkuetta(joukkue));
       joukkuenimi.textContent = joukkue.nimi;
       li.appendChild(joukkuenimi);
       
