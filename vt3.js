@@ -385,12 +385,16 @@ function start(data) {
 
       // joukkueen nimi ja sarja boldattuna
       let li = document.createElement("li");
-      li.textContent = joukkue.nimi + " ";
+      let joukkuenimi = document.createElement("a");
+      joukkuenimi.setAttribute("href", "#tulospalveluOtsikko");
+      joukkuenimi.setAttribute("class", "joukkueennimi");
+      joukkuenimi.textContent = joukkue.nimi;
+      li.appendChild(joukkuenimi);
       
       let sarja = document.createElement("strong");
       for (let s of data.sarjat) {
         if (s.id == joukkue.sarja) {
-          sarja.textContent = s.nimi;
+          sarja.textContent = " " + s.nimi;
           break;
         }
       }
