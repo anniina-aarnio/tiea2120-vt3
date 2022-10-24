@@ -270,10 +270,8 @@ function start(data) {
       for (let nro of joukkue.leimaustapa) {
         if (leima.value === nro || leimaustapaSet.has(leima.value)) {
           leimaustapaSet.add(nro);
-          leima.setAttribute("checked", "checked");
-        } else {
-          leima.removeAttribute("checked");
-        }
+          leima.checked = true;
+        } 
       }
     }
     asetaValiditytJokaiseenCheckboxiin();
@@ -460,7 +458,7 @@ function start(data) {
       for (let jasen of jaseninputit) {
         jasen.setCustomValidity("Joukkueella on oltava vähintään kaksi jäsentä");
       }
-      return undefined;
+      return palautettavaArray; // ennen palautettu undefined 
     }
     return palautettavaArray;
   }
