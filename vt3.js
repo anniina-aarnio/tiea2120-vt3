@@ -70,6 +70,7 @@ function start(data) {
   luoJoukkuelista();
   let leimaustapaSet = new Set();
 
+  // eventit jos klikkaa joukkueen nimeä
   let aelementit = document.getElementsByClassName("joukkueennimi");
   for (let a of aelementit) {
           a.addEventListener("click", taytaJoukkueenTiedotLomakkeeseen);
@@ -136,7 +137,6 @@ function start(data) {
         }
     }
   }
-
 
   // Sarjojen tiedot joukkuekyselyyn
   let aakkossarjat = Array.from(data.sarjat).sort(nimiJarjestys);
@@ -259,12 +259,24 @@ function start(data) {
         break;
       }
     }
-    console.log(joukkue);
+    let formi = document.forms["joukkuelomake"];
+
 
   }
 
   // Submit-tapahtuma
-  document.forms.joukkuelomake.addEventListener("submit", function(e) {
+  document.forms.joukkuelomake.addEventListener("submit", tallennusTapahtuma);
+
+  /**
+   * Tallennustapahtuma, jossa tarkistetaan lomakkeen validityt
+   * Jos kaikki ok:
+   * - lisätään joukkueen tiedot dataan
+   * - tyhjennetään lomake
+   * Jos jotain vialla, palataan
+   * @param {Event} e 
+   * @returns palaaminen, jos jokin validityistä hajoilee
+   */
+  function tallennusTapahtuma(e) {
     e.preventDefault();
     let lisattavatjasenet = tarkistaJasenet();
     // kokonaistarkistus
@@ -326,7 +338,7 @@ function start(data) {
     // joukkuelistan päivittäminen
     tyhjennaJoukkuelista();
     luoJoukkuelista();
-  });
+  }
 
   function forminJasenetJaValiditytResetissäUusiksi() {
     // leimaustapoihin validityt
@@ -344,7 +356,7 @@ function start(data) {
       label.textContent = "Jäsen " + i;
       let input = document.createElement("input");
       input.setAttribute("type", "text");
-      input.setAttribute("pattern", ".*\\S+.*\\S+.*");
+      input.setAttribute("pattern", ".*\\S+.*");
       input.setCustomValidity("Joukkueella on oltava vähintään kaksi jäsentä");
       input.addEventListener("input", muutoksetJaseneen);
       document.forms["joukkuelomake"]["jasenkysely"].appendChild(label).appendChild(input);
