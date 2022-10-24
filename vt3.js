@@ -382,6 +382,7 @@ function start(data) {
     localStorage.setItem("TIEA2120-vt3-2022s", JSON.stringify(data));
 
     // formin tyhjennys alkuperäiseen muotoon
+    leimaustapaSet.clear();
     document.forms.joukkuelomake.reset();
     tallennusnappi.joukkue = null;
     forminJasenetJaValiditytResetissäUusiksi();
