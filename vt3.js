@@ -246,10 +246,39 @@ function start(data) {
    */
   function muokkaaJoukkuetta(joukkue) {
     console.log(joukkue);
+
     // lisätään olemassaolevat tiedot joukkueeseen
     let formi = document.forms.joukkuelomake;
 
     formi.joukkueen_nimi.value = joukkue.nimi;
+    
+    // etsitään valituksi leimaustavat
+
+    // sarja
+
+    // tyhjennetään edelliset jäsenet
+    // lisätään joukkueen jäsenet ja yksi tyhjä
+    let jasenkysely = formi.jasenkysely;
+    for (let i = jasenkysely.elements.length-1; i >= 0; i--) {
+      let input = jasenkysely.elements[i];
+      input.parentNode.remove();
+    }
+    let jasenia = Math.max(joukkue.jasenet.length, (2-1));
+    for (let i = 0; i <= jasenia; i++) {
+      let label = document.createElement("label");
+      label.textContent = "Jäsen " + (i+1);
+      let input = document.createElement("input");
+      input.setAttribute("type", "text");
+      input.setAttribute("pattern", ".*\\S+.*");
+      input.setCustomValidity("Joukkueella on oltava vähintään kaksi jäsentä");
+      input.addEventListener("input", muutoksetJaseneen);
+      let jasen = joukkue.jasenet[i];
+      if (jasen) {
+        input.value = jasen;
+      }
+      document.forms["joukkuelomake"]["jasenkysely"].appendChild(label).appendChild(input);
+    }
+
 
 
 
@@ -334,7 +363,7 @@ function start(data) {
   function forminJasenetJaValiditytResetissäUusiksi() {
     // leimaustapoihin validityt
     leimaustapaSet.clear();
-    asetaValiditytJokaiseenCheckboxiin(); // EI JOSTAIN SYYSTÄ PÄIVITYKSEN JÄLKEEN TEE
+    asetaValiditytJokaiseenCheckboxiin();
 
     // jäsenet uusiksi
     let jasenkysely = document.forms.joukkuelomake.jasenkysely;
